@@ -1,6 +1,6 @@
 ## 在 HTML 中使用 JavaScript
 
-####2.1 \<scirpt> 元素
+#### 2.1 \<scirpt> 元素
 > 向 HTML 页面中插入 JavaScript 的主要方法，就是使用\<script>元素。这个元素由 Netscape 创造，并在 Netscape Navigator 2 中首先实现。后来，这个元素被加入到正式的 HTML 规范中。HTML 4.01 为\<script>定义了下列6个属性。
 - async：可选。表示应该立即下载脚本，但不应妨碍页面中的其他操作，比如下载其他资源或等待加载其他脚本。只对外部脚本文件有效。
 - charset：可选。表示通过 src 属性指定的代码字符集。
