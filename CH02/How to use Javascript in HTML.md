@@ -24,5 +24,85 @@
 ```javascript
     <script type="text/javascript" src="example.js"></script>
 ```
-> 在上面的例子中，外部文件 example.js 将被加载到当前页面中。外部文件只须包含通常要放在开始的\<script>和结束的\</script>之间的那些JavaScript 代码即可。与解析嵌入式 JavaScript 代码一样，在解析外部 JavaScript 文件（包括下载该文件）时，页面的处理也会暂时停止。
+> 在上面的例子中，外部文件 example.js 将被加载到当前页面中。外部文件只须包含通常要放在开始的\<script>和结束的\</script>之间的那些JavaScript 代码即可。与解析嵌入式 JavaScript 代码一样，在解析外部 JavaScript 文件（包括下载该文件）时，页面的处理也会暂时停止。如果在带有 src 属性的 \<script> 和 \</script> 标签之间嵌入了额外的 JavaScript 代码，则只会下载并执行外部的脚本文件，嵌入的代码会被忽略。
+> 无论如何包含代码，只要不存在 defer 和 async 属性，浏览器都会按照\<script>元素在页面中出现的先后顺序对它们依次进行解析。
 
+#### 2.1.1 标签的位置
+> 按照传统的做法，所有的\<script>元素都应该放在页面的\<head>元素中，例如：
+```javascript
+<!DOCTYPE html>
+<html>
+    <head>
+	    <title>Example HTML Page</title>
+	    <script type="text/javascript" src="example1.js"></script>
+	    <script type="text/javascript" src="example2.js"></script>
+    </head>
+<body>
+    <!-- 这里放内容 -->
+</body>
+</html>
+```
+> 这种做法的目的是把所有外部文件的饮用都放在相同的地方。可是，在文档的\<head>元素中包含所有的 JavaScript 文件，必需等到全部 JavaScript 代码都被下载、解析和执行完成以后，才能开始呈现页面的内容（浏览器在遇到\<body>标签时才开始呈现内容）。对于那些需要很多 JavaScript 代码的页面来说，无疑会导致浏览器在呈现页面时出现明显的延迟、延迟期间的浏览器窗口中将是一片空白。为了避免这个问题，现代Web应用程序一般都把全部的 JavaScript 引用放在 \<body> 元素中页面内容的后面，如下所示：
+```javascript
+<!DOCTYPE html>
+<html>
+    <head>
+	    <title>Example HTML Page</title>
+    </head>
+<body>
+    <!-- 这里放内容 -->
+    <script type="text/javascript" src="example1.js"></script>
+    <script type="text/javascript" src="example2.js"></script>
+</body>
+</html>
+```
+#### 2.1.2 延迟脚本
+> HTML4.01 为\<script>标签定义了defer属性。这个属性的用途是表明脚本在执行时不会影响页面的构造。在\<script>元素中设置了 defer 属性，相当于告诉浏览器**立即下载**，但延迟执行。按照HTML5 规范要求脚本按照它们出现的先后顺序执行，但在现实当中，延迟脚本并不一定会按照顺序执行，也不一定会在 DOMContentLoaded 事件触发前执行，**因此最好只包含一个延迟脚本**
+```javascript
+<!DOCTYPE html>
+<html>
+    <head>
+	    <title>Example HTML Page</title>
+        <script type="text/javascript" defer="defer" src="example1.js"></script>
+        <script type="text/javascript" defer="defer" src="example2.js"></script>
+    </head>
+<body>
+    <!-- 这里放内容 -->
+</body>
+</html>
+```
+#### 2.1.3 异步脚本
+> 与 defer 类似，async 只适用于外部脚本文件，并告诉浏览器立即下载文件。指定 async 属性的目的是不让页面等待两个脚本下载和执行，从而也不加载页面其他内容。为此，**建议异步脚本不要在加载期间修改DOM**，异步脚本一定会在页面的 load 事件之前执行，但可能会在 DOMContentLoaded 事件出发之前或之后执行。
+ ```javascript
+<!DOCTYPE html>
+<html>
+    <head>
+	    <title>Example HTML Page</title>
+        <script type="text/javascript" async="async" src="example1.js"></script>
+        <script type="text/javascript" async="async" src="example2.js"></script>
+    </head>
+<body>
+    <!-- 这里放内容 -->
+</body>
+</html>
+```
+#### 2.4 \<noscript>元素
+> 早起浏览器都会面临一个特殊的问题，即当浏览器不支持 JavaScript 时如何让页面平稳地退化。最终解决方案就是创造一个\<noscript>元素。这个元素可以包含能够出现在文档\<body>中的任何 HTML 元素————\<script>元素除外。包含在\<noscript>元素汇总的内容只有在下列情况下才会显示出来：
+- 浏览器不支持脚本；
+- 浏览器支持脚本，但脚本被禁用。
+```javascript
+<!DOCTYPE html>
+<html>
+    <head>
+	    <title>Example HTML Page</title>
+        <script type="text/javascript" defer="defer" src="example1.js"></script>
+        <script type="text/javascript" defer="defer" src="example2.js"></script>
+    </head>
+<body>
+    <!-- 这里放内容 -->
+    <noscript>
+        <p>本页面需要浏览器支持（启用）JavaScript。</p>
+    </noscript>    
+</body>
+</html>
+```
